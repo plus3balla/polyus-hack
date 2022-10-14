@@ -1,4 +1,4 @@
-const files = require('fs');
+import files from 'fs';
 
 interface ConverterArguments {
     left: string,

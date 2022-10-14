@@ -1,4 +1,4 @@
-import WebSocketModule from 'ws';
+import { WebSocketServer } from 'ws';
 import convertImages from './image-to-base64.js';
 import { JSONTypes, ConnectionTypes } from './some-strings.js';
 function delay(ms) {
@@ -8,13 +8,16 @@ function delay(ms) {
 const frameQueue = [];
 let processingFrame, processedResults;
 let translationFinished = false, counter = 0;
+//Timer
+const waitFor = 1000;
+let timerPased;
 //Function
 //managing frameQueue
 const queueUp = async () => {
     counter++;
     while (frameQueue.length === 0 && !translationFinished)
         await delay(100);
-    if (translationFinished)
+    if (translationFinished && frameQueue.length === 0)
         return '';
     processingFrame = frameQueue.shift();
 };
@@ -27,7 +30,7 @@ convertImages({
     onFinish: () => { translationFinished = true; }
 });
 //server start
-const server = new WebSocketModule.Server({
+const server = new WebSocketServer({
     port: 8080
 });
 server.on('connection', function (socket) {
@@ -42,11 +45,13 @@ server.on('connection', function (socket) {
     };
     const isTranlationLive = () => !(frameQueue.length === 0 && translationFinished);
     const handleNeural = async (json) => {
-        const askToProcessFrame = () => {
+        const askToProcessFrame = async () => {
+            await timerPased;
             socket.send(JSON.stringify({
                 type: JSONTypes.processRequest,
                 frame: processingFrame
             }));
+            timerPased = delay(1000);
         };
         if (json.type === JSONTypes.greet) {
             if (processingFrame === undefined)
@@ -55,7 +60,7 @@ server.on('connection', function (socket) {
                 socket.close(1000, 'Translation finished');
                 return;
             }
-            askToProcessFrame();
+            await askToProcessFrame();
         }
         if (json.type === JSONTypes.processedFrame) {
             processedResults = json;
@@ -64,7 +69,7 @@ server.on('connection', function (socket) {
                 socket.close(1000, 'Translation finished');
                 return;
             }
-            askToProcessFrame();
+            await askToProcessFrame();
         }
         if (json.type !== JSONTypes.greet && json.type !== JSONTypes.processedFrame)
             throw `Wrong json type. Expected: ${JSONTypes.greet} or ${JSONTypes.processedFrame}  - Got ${json.type}`;

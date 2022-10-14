@@ -1,4 +1,4 @@
-const files = require('fs');
+import files from 'fs';
 const makeFileIterator = (width) => {
     let num = 0;
     const stringNum = () => {
