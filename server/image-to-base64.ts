@@ -4,7 +4,8 @@ interface ConverterArguments {
     left: string,
     right: string, 
     width : number,
-    callback : (image:string) => any
+    callback : (image:string) => any,
+    onFinish? : () => any
 }
 
 const makeFileIterator = (width: number) => {
@@ -25,7 +26,7 @@ const makeFileIterator = (width: number) => {
     }
 }
 
-module.exports = async function convertNumberedImagesToBase64(args:ConverterArguments) : Promise<void> {
+export default async function convertNumberedImagesToBase64(args:ConverterArguments) : Promise<void> {
     const next = makeFileIterator(args.width);
 
     while (true) {
@@ -37,6 +38,7 @@ module.exports = async function convertNumberedImagesToBase64(args:ConverterArgu
                 'base64',
                 (e:any, data:string) => {
                     if (e !== null) {
+                        args.onFinish?.()
                         resolve(true);
                         return;
                     }

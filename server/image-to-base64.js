@@ -1,4 +1,3 @@
-"use strict";
 const files = require('fs');
 const makeFileIterator = (width) => {
     let num = 0;
@@ -17,13 +16,15 @@ const makeFileIterator = (width) => {
         return stringNum();
     };
 };
-module.exports = async function convertNumberedImagesToBase64(args) {
+export default async function convertNumberedImagesToBase64(args) {
     const next = makeFileIterator(args.width);
     while (true) {
         let end = false;
         await new Promise(function (resolve) {
             files.readFile(args.left + next() + args.right, 'base64', (e, data) => {
+                var _a;
                 if (e !== null) {
+                    (_a = args.onFinish) === null || _a === void 0 ? void 0 : _a.call(args);
                     resolve(true);
                     return;
                 }
@@ -34,4 +35,4 @@ module.exports = async function convertNumberedImagesToBase64(args) {
         if (end)
             break;
     }
-};
+}
