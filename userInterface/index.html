@@ -27,10 +27,10 @@
           <p>Распределение руды по классам (%)</p>
         </div>
         <div class="elem grey" id="max-size-plot">
-          <p>Изменение максимального размера частиц</p>
+          <p>Изменение максимального размера частиц (мм)</p>
         </div>
         <div class="elem grey" id="trend-plot">
-          <p>Тренд изменения грансостава</p>
+          <p>Тренд изменения грансостава (%)</p>
         </div>
       </div>
 	  </div>
@@ -94,7 +94,7 @@
         document.getElementById('trend-plot').append(Plot.plot({
                                                                         marks: [
                                                                                 Plot.line(sizeCompPrev, {x: "size", y: "count", stroke: "#C95919"}),
-                                                                                Plot.line(sizeCompMid, {x: "size", y: "count", stroke: "#71530F"}),
+                                                                                Plot.line(sizeCompMid, {x: "size", y: "count", stroke: "#F7E589"}),
                                                                                 Plot.line(sizeCompNext, {x: "size", y: "count"}),
                                                                                ],
                                                                         style: {
