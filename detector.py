@@ -34,7 +34,7 @@ except:
 model.eval()
 
 
-def get_bboxes(encoded_data: str) -> dict:
+def get_bboxes(encoded_data: str) -> list:
     decoded_data = base64.b64decode(encoded_data)
 
     img = Image.open(BytesIO(decoded_data))
@@ -46,7 +46,3 @@ def get_bboxes(encoded_data: str) -> dict:
         response.append(rect.tolist())
 
     return response
-
-
-with open('text.txt', 'rb') as f:
-    print(get_bboxes(f.read()))
