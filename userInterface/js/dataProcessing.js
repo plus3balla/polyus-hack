@@ -109,7 +109,7 @@ const getClassesPercent = (data) => {
 
     for (let i = 0; i < n_data; ++i) {
         let [x1, y1, x2, y2] = data[i];
-        const a = Math.max(x2 - x1, y2 - y1);
+        const a = 2.9768213048 * Math.max(x2 - x1, y2 - y1);
         if (a <= 40) {
             classes[0]++;
         } else if (a <= 70) {
