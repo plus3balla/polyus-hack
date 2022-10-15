@@ -62,7 +62,7 @@ body {
 #online-conveyor {
   grid-column: 1 / 5;
   grid-row: 3 / 5;
-  align-items: flex-start;
+  flex-direction: row;
 }
 
 #size-classes-plot {
@@ -84,19 +84,12 @@ body {
   width: 60%;
   height: 95%;
   border: 1px solid #242422;
+  border-radius: 7px;
 }
 
 p {
   margin: 0px;
   padding: 0px;
-}
-
-form {
-  height: 100%;
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
 }
 
 input[type=text] {
@@ -108,4 +101,14 @@ input[type=text] {
   color: white;
   font-size: 14px;
   font-family: 'Roboto', sans-serif;
+}
+
+#save {
+  height: 26px;
+}
+
+#legend {
+  height: 90%;
+  width: 30%;
+  background-color: #555550;
 }
