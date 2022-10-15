@@ -62,6 +62,7 @@ body {
 #online-conveyor {
   grid-column: 1 / 5;
   grid-row: 3 / 5;
+  flex-direction: row;
 }
 
 #size-classes-plot {
@@ -83,6 +84,7 @@ body {
   width: 60%;
   height: 95%;
   border: 1px solid #242422;
+  border-radius: 7px;
 }
 
 p {
@@ -103,4 +105,10 @@ input[type=text] {
 
 #save {
   height: 26px;
+}
+
+#legend {
+  height: 90%;
+  width: 30%;
+  background-color: #555550;
 }
