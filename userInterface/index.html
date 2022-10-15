@@ -31,7 +31,15 @@
         <div class="elem grey" id="online-conveyor">
           <image width="460" height="250" style='display:block' id='base64image'></image>
           <svg viewBox="0 0 460 250" preserveAspectRatio="xMinYMin meet" id="rects"></svg> 
-          <div class="elem" id="legend"></div>
+          <div class="elem" id="legend">
+            <div class="legend-square" id="col1"></div><div id="cl1">0-40 мм</div>
+            <div class="legend-square" id="col2"></div><div id="cl2">40-70 мм</div>
+            <div class="legend-square" id="col3"></div><div id="cl3">70-80 мм</div>
+            <div class="legend-square" id="col4"></div><div id="cl4">80-100 мм</div>
+            <div class="legend-square" id="col5"></div><div id="cl5">100-150 мм</div>
+            <div class="legend-square" id="col6"></div><div id="cl6">150-250 мм</div>
+            <div class="legend-square" id="col7"></div><div id="cl7">> 250 мм</div>
+          </div>
         </div>
 
         <div class="elem grey" id="size-classes-plot">
@@ -73,8 +81,7 @@
       const sizes = ["0-40мм", "40-70мм", "70-80мм", "80-100мм", "100-150мм", "150-250мм", ">250мм"];
       document.getElementById('size-classes-plot').append(Plot.plot({
                                                                       marks: [
-                                                                              Plot.barY(sizeComp, {x: "size", y: "count", fill: "count"}),
-                                                                              Plot.line(sizeComp, {x: "size", y: "count"}),
+                                                                              Plot.barY(sizeComp, {x: "size", y: "count", fill: "count"})
                                                                              ],
                                                                       style: {
                                                                               color: "white",

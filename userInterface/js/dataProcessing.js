@@ -153,8 +153,25 @@ const drawRects = (data) => {
 
     for (let i = 0; i < n_data; ++i) {
         let [x1, y1, x2, y2] = data[i];
+        const a = 2.9768213048 * Math.max(x2 - x1, y2 - y1);
+        let color;
+        if (a <= 40) {
+            color = "#6D2EB2";
+        } else if (a <= 70) {
+            color = "#00EAFF";
+        } else if (a <= 80) {
+            color = "#2EB28C";
+        } else if (a <= 100) {
+            color = "#42B22E";
+        } else if (a <= 150) {
+            color = "#8CB22E";
+        } else if (a <= 250) {
+            color = "#E45436";
+        } else {
+            color = "#FF9900";
+        }
         [x1, y1, x2, y2] = [x1 * 0.239583, y1 * 0.231481, x2 * 0.239583, y2 * 0.231481];
         //[x1, y1, x2, y2] = [x1 * 0.359375, y1 * 0.347222, x2 * 0.359375, y2 * 0.347222];
-        document.getElementById("rects").insertAdjacentHTML('beforeend', `<polygon points="${x1},${y1} ${x1},${y2} ${x2},${y2} ${x2},${y1} ${x1},${y1}" fill="none" stroke="red" />`);
+        document.getElementById("rects").insertAdjacentHTML('beforeend', `<polygon points="${x1},${y1} ${x1},${y2} ${x2},${y2} ${x2},${y1} ${x1},${y1}" fill="none" stroke="${color}" />`);
     }
 }
