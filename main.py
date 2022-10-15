@@ -8,10 +8,9 @@ import torchvision
 from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
 
 
-def get_model_instance_segmentation(num_classes: int):
+def get_model(num_classes: int):
     # Загрузка предобученной модели детекции
-    model = torchvision.models.detection.fasterrcnn_resnet50_fpn(
-        pretrained=True)
+    model = torchvision.models.detection.fasterrcnn_resnet50_fpn(weights=None)
     # Получение числа входных признаков
     in_features = model.roi_heads.box_predictor.cls_score.in_features
     # Замена последнего слоя под нужное число признаков и классов
@@ -23,7 +22,7 @@ def get_model_instance_segmentation(num_classes: int):
 directory = os.getcwd()
 num_classes = 2
 
-model = get_model_instance_segmentation(num_classes)
+model = get_model(num_classes)
 model_path = os.path.join(directory, 'model')
 
 try:
@@ -40,5 +39,14 @@ def get_bboxes(encoded_data: str) -> dict:
 
     img = Image.open(BytesIO(decoded_data))
     img_tensor = torchvision.transforms.ToTensor()(img).unsqueeze(0)
+    output = model.forward(img_tensor)[0]
 
-    return model.forward(img_tensor)[0]
+    response = []
+    for rect in output['boxes']:
+        response.append(rect.tolist())
+
+    return response
+
+
+with open('text.txt', 'rb') as f:
+    print(get_bboxes(f.read()))
