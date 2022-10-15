@@ -10,43 +10,66 @@
     <script defer src="bundle.js" type="module"></script>
   </head>
   <body>
+
     <div class="flex-container">
+
       <div class="grid-container">
-	      <div class="elem" id="alert-oversize"><p>Негабарита нет</p></div>
-        <div class="elem" id="alert-empty"><p>Пустых мест нет</p></div>
+
+	      <div class="elem" id="alert-oversize"></div>
+
+        <div class="elem" id="alert-empty"></div>
+
         <div class="elem grey" id="set-oversize">
         <label>
-          <p id="form-text">Текущий размер негабарита 270. <br>Установить новый:</p>
-          <input type="text" placeholder="Введите число..." id="change-oversize">
-          <button id="save" onclick="getNewOversize()">Сохранить</button>
+          <p id="form-text"></p>
+          <script>document.getElementById("form-text").innerHTML = 'Текущий размер негабарита ' + localStorage.getItem("oversize") + '. <br>Установить новый:';</script>
+          <input type="number" placeholder="Введите число..." id="change-oversize" min="0">
+          <button id="save" onclick="setNewOversize()">Сохранить</button>
         </label>
         </div>
+
         <div class="elem grey" id="online-conveyor">
-          <img src="examplepic.jpg" alt="conveyor" id="conveyor-pic" />
-          <div class="elem grey" id="legend">Здесь будет легенда для разметки гранул.</div>
+          <image width="460" height="250" style='display:block' id='base64image'></image>
+          <svg viewBox="0 0 460 250" preserveAspectRatio="xMinYMin meet" id="rects"></svg> 
+          <div class="elem" id="legend"></div>
         </div>
+
         <div class="elem grey" id="size-classes-plot">
           <p>Распределение руды по классам (%)</p>
         </div>
+
         <div class="elem grey" id="max-size-plot">
           <p>Изменение макс. размера частиц (мм)</p>
         </div>
+
         <div class="elem grey" id="trend-plot">
           <p>Тренд изменения грансостава (%)</p>
         </div>
+
       </div>
 	  </div>
+
     <script type="module">
       import * as Plot from "https://cdn.skypack.dev/@observablehq/plot@0.6";
+      
+      setEmpty(data);
+      setOversizeAlert(data);
+
+      // plots output
+
+      const classesData = getClassesPercent(data);
+      console.log(getMaxValue(data));
+
       const sizeComp = [
-                   {n: 0, size: "0-40мм", count: 18.07},
-                   {n: 1, size: "40-70мм", count: 7.08},
-                   {n: 2, size: "70-80мм", count: 2.81},
-                   {n: 3, size: "80-100мм", count: 4.53},
-                   {n: 4, size: "100-150мм", count: 11.77},
-                   {n: 5, size: "150-250мм", count: 30.92},
-                   {n: 6, size: ">250мм", count: 24.82}
-                 ];
+          {size: "0-40мм", count: classesData[0]},
+          {size: "40-70мм", count: classesData[1]},
+          {size: "70-80мм", count: classesData[2]},
+          {size: "80-100мм", count: classesData[3]},
+          {size: "100-150мм", count: classesData[4]},
+          {size: "150-250мм", count: classesData[5]},
+          {size: ">250мм", count: classesData[6]}
+        ];
+
       const sizes = ["0-40мм", "40-70мм", "70-80мм", "80-100мм", "100-150мм", "150-250мм", ">250мм"];
       document.getElementById('size-classes-plot').append(Plot.plot({
                                                                       marks: [
@@ -95,8 +118,8 @@
                  ];
         document.getElementById('trend-plot').append(Plot.plot({
                                                                         marks: [
-                                                                                Plot.line(sizeCompPrev, {x: "size", y: "count", stroke: "#C95919"}),
-                                                                                Plot.line(sizeCompMid, {x: "size", y: "count", stroke: "#F7E589"}),
+                                                                                Plot.line(sizeCompPrev, {x: "size", y: "count", stroke: "#F7E589"}),
+                                                                                Plot.line(sizeCompMid, {x: "size", y: "count", stroke: "#C95919"}),
                                                                                 Plot.line(sizeCompNext, {x: "size", y: "count"}),
                                                                                ],
                                                                         style: {
@@ -136,8 +159,12 @@
                                                                         color: {
                                                                           type: "linear", scheme: "ylorbr", legend: false
                                                                         }
-                                                                    }));
-</script>
-  <script src="./js/getNewOversize.js"></script>
+                                                                    }));                                                             
+    drawRects(data);
+  </script>
+  <script src="./js/dataProcessing.js"></script>
+  <script src="./js/setNewOversize.js"></script>
+  <script src="./js/setEmpty.js"></script>
+  <script src="./js/setOversizeAlert.js"></script>
   </body>
 </html>
