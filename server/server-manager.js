@@ -1,6 +1,7 @@
 import { WebSocketServer } from 'ws';
 import convertImages from './image-to-base64.js';
 import { JSONTypes, ConnectionTypes } from './some-strings.js';
+import { logConnected, logDisconnected, logError } from './console-readability.js';
 function delay(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
@@ -34,7 +35,6 @@ const server = new WebSocketServer({
     port: 8080
 });
 server.on('connection', function (socket) {
-    console.log("Got one");
     let identity = null;
     const identify = (json) => {
         if (json.type !== JSONTypes.greet)
@@ -95,11 +95,15 @@ server.on('connection', function (socket) {
         const json = JSON.parse(msg.toString());
         if (identity === null) {
             identity = identify(json);
+            logConnected(identity);
         }
         if (identity === ConnectionTypes.visitor)
             handleVisitor(json);
         if (identity === ConnectionTypes.neural)
             handleNeural(json);
     });
-    socket.on('close', () => console.log('disconected'));
+    socket.onerror = (event) => {
+        logError(event.message);
+    };
+    socket.on('close', () => logDisconnected(identity === null ? '' : identity));
 });
