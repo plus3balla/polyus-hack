@@ -18,9 +18,13 @@ async def handle(uri):
     async with connect(uri) as websocket:
         await websocket.send(json.dumps(greet))
 
+        count = 0;
+
         while (True):
+            count += 1
+
             response = neuralNetworkSimulate(json.loads(await websocket.recv()))
-            print("Exchanged Messages")
+            print(str(count) + "message exchanged")
             await websocket.send(json.dumps(response));
 
 
