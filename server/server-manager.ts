@@ -44,7 +44,7 @@ convertImages({
 
     //server start
 const server = new WebSocketServer({
-    port: 8080
+    port: 8080,
 });
 
 server.on('connection', function(socket) {
