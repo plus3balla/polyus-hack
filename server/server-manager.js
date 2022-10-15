@@ -82,7 +82,11 @@ server.on('connection', function (socket) {
                 socket.close(1000, 'Translation finished');
                 return;
             }
-            socket.send(JSON.stringify(Object.assign({}, processedResults, { counter })));
+            if (processedResults !== undefined)
+                socket.send(JSON.stringify(Object.assign({}, processedResults, { counter })));
+            else {
+                socket.send(JSON.stringify({ type: JSONTypes.processedFrame, counter }));
+            }
         }
         if (json.type !== JSONTypes.greet && json.type !== JSONTypes.webserviceRequest)
             throw `Wrong json type. Expected: ${JSONTypes.greet} or ${JSONTypes.webserviceRequest}  - Got ${json.type}`;
@@ -97,4 +101,5 @@ server.on('connection', function (socket) {
         if (identity === ConnectionTypes.neural)
             handleNeural(json);
     });
+    socket.on('close', () => console.log('disconected'));
 });

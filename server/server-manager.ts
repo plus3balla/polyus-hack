@@ -1,5 +1,3 @@
-//import WebSocketModule from 'ws';
-import { time } from 'console';
 import { WebSocketServer } from 'ws';
 import convertImages from './image-to-base64.js';
 import {JSONTypes, ConnectionTypes} from './some-strings.js';
@@ -97,7 +95,8 @@ server.on('connection', function(socket) {
         if (JSONTypes.webserviceRequest) {
             if (!isTranlationLive()) {socket.close(1000, 'Translation finished'); return}
 
-            socket.send(JSON.stringify(Object.assign({}, processedResults, {counter})));
+            if (processedResults !== undefined) socket.send(JSON.stringify(Object.assign({}, processedResults, {counter})));
+            else {socket.send(JSON.stringify({ type : JSONTypes.processedFrame, counter}))}
         }
 
         if (json.type !== JSONTypes.greet && json.type !== JSONTypes.webserviceRequest)
@@ -112,6 +111,11 @@ server.on('connection', function(socket) {
         if (identity === ConnectionTypes.visitor) handleVisitor(json);
         if (identity === ConnectionTypes.neural) handleNeural(json);
     });
+    socket.onerror = (event) => {
+        console.log(`Error - ${event.message}`)
+    }
+
+    socket.on('close', () => console.log('disconected'))
   });
 
 
