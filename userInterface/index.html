@@ -2,6 +2,7 @@
 <html lang="ru">
   <head>
     <meta charset="utf-8">
+    <title>Конвейер</title>
     <link href="styles.css" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -13,18 +14,17 @@
 	      <div class="elem" id="alert-oversize"><p>Негабарита нет</p></div>
         <div class="elem" id="alert-empty"><p>Пустых мест нет</p></div>
         <div class="elem grey" id="set-oversize">
-          <form action="" method="post">
-            <label>
-              Установить размер негабарита:
-              <input type="text" placeholder="Введите число..." name="change-oversize">
-            </label>
-          </form>
+        <label>
+          <p id="form-text">Текущий размер негабарита 270. <br>Установить новый:</p>
+          <input type="text" placeholder="Введите число..." id="change-oversize">
+          <button id="save" onclick="getNewOversize()">Сохранить</button>
+        </label>
         </div>
         <div class="elem grey" id="online-conveyor">
           <img src="examplepic.jpg" alt="conveyor" id="conveyor-pic" />
         </div>
         <div class="elem grey" id="size-classes-plot">
-          <p>Распределение руды по классам</p>
+          <p>Распределение руды по классам (%)</p>
         </div>
         <div class="elem grey" id="max-size-plot">
           <p>Изменение максимального размера частиц</p>
@@ -34,5 +34,108 @@
         </div>
       </div>
 	  </div>
+    <script type="module">
+      import * as Plot from "https://cdn.skypack.dev/@observablehq/plot@0.6";
+      const sizeComp = [
+                   {n: 0, size: "0-40мм", count: 18.07},
+                   {n: 1, size: "40-70мм", count: 7.08},
+                   {n: 2, size: "70-80мм", count: 2.81},
+                   {n: 3, size: "80-100мм", count: 4.53},
+                   {n: 4, size: "100-150мм", count: 11.77},
+                   {n: 5, size: "150-250мм", count: 30.92},
+                   {n: 6, size: ">250мм", count: 24.82}
+                 ];
+      const sizes = ["0-40мм", "40-70мм", "70-80мм", "80-100мм", "100-150мм", "150-250мм", ">250мм"];
+      document.getElementById('size-classes-plot').append(Plot.plot({
+                                                                      marks: [
+                                                                              Plot.barY(sizeComp, {x: "size", y: "count", fill: "count"}),
+                                                                              Plot.line(sizeComp, {x: "size", y: "count"}),
+                                                                             ],
+                                                                      style: {
+                                                                              color: "white",
+                                                                              background: "#2C2B29",
+                                                                              fontFamily: "Roboto",
+                                                                              fontSize: "16px",
+                                                                              height: "170px"
+                                                                            },
+                                                                      x: {domain: sizes, label: ""},
+                                                                      y: {grid: true, label: ""},
+                                                                      color: {
+                                                                        type: "linear", scheme: "ylorbr", legend: false
+                                                                      }
+                                                                  }));
+       const sizeCompPrev = [
+                   {n: 0, size: "0-40мм", count: 10.07},
+                   {n: 1, size: "40-70мм", count: 10.08},
+                   {n: 2, size: "70-80мм", count: 5.81},
+                   {n: 3, size: "80-100мм", count: 1.53},
+                   {n: 4, size: "100-150мм", count: 19.77},
+                   {n: 5, size: "150-250мм", count: 30.92},
+                   {n: 6, size: ">250мм", count: 21.82}
+                 ];
+       const sizeCompNext = [
+                    {n: 0, size: "0-40мм", count: 19.07},
+                    {n: 1, size: "40-70мм", count: 15.08},
+                    {n: 2, size: "70-80мм", count: 11.81},
+                    {n: 3, size: "80-100мм", count: 1.53},
+                    {n: 4, size: "100-150мм", count: 10.77},
+                    {n: 5, size: "150-250мм", count: 25.92},
+                    {n: 6, size: ">250мм", count: 15.82}
+                  ];
+      const sizeCompMid = [
+                   {n: 0, size: "0-40мм", count: 14.57},
+                   {n: 1, size: "40-70мм", count: 12.58},
+                   {n: 2, size: "70-80мм", count: 8.81},
+                   {n: 3, size: "80-100мм", count: 1.53},
+                   {n: 4, size: "100-150мм", count: 15.27},
+                   {n: 5, size: "150-250мм", count: 28.42},
+                   {n: 6, size: ">250мм", count: 18.82}
+                 ];
+        document.getElementById('trend-plot').append(Plot.plot({
+                                                                        marks: [
+                                                                                Plot.line(sizeCompPrev, {x: "size", y: "count", stroke: "#C95919"}),
+                                                                                Plot.line(sizeCompMid, {x: "size", y: "count", stroke: "#71530F"}),
+                                                                                Plot.line(sizeCompNext, {x: "size", y: "count"}),
+                                                                               ],
+                                                                        style: {
+                                                                                color: "white",
+                                                                                background: "#2C2B29",
+                                                                                fontFamily: "Roboto",
+                                                                                fontSize: "16px",
+                                                                                height: "170px"
+                                                                              },
+                                                                        x: {domain: sizes, label: ""},
+                                                                        y: {grid: true, label: ""}
+                                                                    }));
+        const sizeMax = [
+                     {time: "10:51", size: 253},
+                     {time: "10:52", size: 261},
+                     {time: "10:53", size: 219},
+                     {time: "10:54", size: 189},
+                     {time: "10:55", size: 245},
+                     {time: "10:56", size: 231},
+                     {time: "10:57", size: 222},
+                     {time: "10:58", size: 241},
+                     {time: "10:59", size: 236}
+                   ];
+        document.getElementById('max-size-plot').append(Plot.plot({
+                                                                        marks: [
+                                                                                Plot.line(sizeMax, {x: "time", y: "size"}),
+                                                                               ],
+                                                                        style: {
+                                                                                color: "white",
+                                                                                background: "#2C2B29",
+                                                                                fontFamily: "Roboto",
+                                                                                fontSize: "16px",
+                                                                                height: "170px"
+                                                                              },
+                                                                        x: {label: ""},
+                                                                        y: {grid: true, label: ""},
+                                                                        color: {
+                                                                          type: "linear", scheme: "ylorbr", legend: false
+                                                                        }
+                                                                    }));
+</script>
+  <script src="./js/getNewOversize.js"></script>
   </body>
 </html>
