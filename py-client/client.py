@@ -2,10 +2,22 @@ import asyncio
 import json
 from websockets import connect
 
+from main import get_bboxes
+
+
 greet = {
     "type" : "greet",
     "who" : "neural" 
 }
+
+
+
+def neuralNetwork(json):
+    response = get_bboxes(json['frame'])
+    json["type"] = "processed frame";
+    json['rectangles'] = response;
+    return json
+    
 
 
 def neuralNetworkSimulate(json) :
@@ -23,7 +35,8 @@ async def handle(uri):
         while (True):
             count += 1
 
-            response = neuralNetworkSimulate(json.loads(await websocket.recv()))
+            response = neuralNetwork(json.loads(await websocket.recv()))
+            print(response)
             print(str(count) + "message exchanged")
             await websocket.send(json.dumps(response));
 
