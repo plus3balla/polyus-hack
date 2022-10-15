@@ -2,6 +2,7 @@ import { WebSocketServer } from 'ws';
 import convertImages from './image-to-base64.js';
 import {JSONTypes, ConnectionTypes} from './some-strings.js';
 import {logConnected, logDisconnected, logError} from './console-readability.js';
+import {getClassesPercent, getMaxValue} from './compressing-array.js';
 
 function delay(ms:number) {
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -10,13 +11,15 @@ function delay(ms:number) {
 interface ProcessedResults {
     type : string,
     frame : string,
-    rectangles : any[]
+    rectangles : number[][]
 }
 
 //Data
 const frameQueue: string[] = [];
 let processingFrame:string | undefined, processedResults : ProcessedResults | undefined;
 let translationFinished = false, counter = 0;
+
+const graphResult: number[][] = [];
 
 //Timer
 const waitFor = 1000;
@@ -81,6 +84,11 @@ server.on('connection', function(socket) {
         if (json.type === JSONTypes.processedFrame) {
             processedResults = json as ProcessedResults;
 
+            const max = getMaxValue(processedResults.rectangles);
+            const classes = getClassesPercent(processedResults.rectangles);
+
+            graphResult.push([...classes, max])
+
             await queueUp();
             if (!isTranlationLive()) {socket.close(1000, 'Translation finished'); return}
 
@@ -95,7 +103,9 @@ server.on('connection', function(socket) {
         if (JSONTypes.webserviceRequest) {
             if (!isTranlationLive()) {socket.close(1000, 'Translation finished'); return}
 
-            if (processedResults !== undefined) socket.send(JSON.stringify(Object.assign({}, processedResults, {counter})));
+            if (processedResults !== undefined) socket.send(JSON.stringify(
+                Object.assign({}, processedResults, {counter, graphResult : graphResult[Math.floor(graphResult.length / 2)]})
+                ));
             else {socket.send(JSON.stringify({ type : JSONTypes.processedFrame, counter}))}
         }
 
