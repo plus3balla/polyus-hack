@@ -1,6 +1,12 @@
 import ClientWebSocket from "./client-websocket.js";
 
-const websocket = new ClientWebSocket((inst, data) => console.log(data))
+let newData;
+
+const websocket = new ClientWebSocket((inst, data) => {
+                                                        newData = data; 
+                                                        console.log(data);
+                                                      })
+
 
 function startReceivingData() {
 
@@ -11,7 +17,7 @@ function startReceivingData() {
 
     websocket.greet();
     console.log('greeted')
-    
+
     websocket.askForFrame();
 
     setInterval(() => websocket.askForFrame(), 1000);

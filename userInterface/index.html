@@ -60,13 +60,16 @@
     <script type="module">
       import * as Plot from "https://cdn.skypack.dev/@observablehq/plot@0.6";
       
+      //const data = newData;
+
       setEmpty(data);
       setOversizeAlert(data);
 
       // plots output
 
       const classesData = getClassesPercent(data);
-      console.log(getMaxValue(data));
+      // const classesData = newData["graphResult"];
+      //console.log(getMaxValue(data));
 
       const sizeComp = [
           {size: "0-40мм", count: classesData[0]},
@@ -93,7 +96,7 @@
                                                                       x: {domain: sizes, label: ""},
                                                                       y: {grid: true, label: ""},
                                                                       color: {
-                                                                        type: "linear", scheme: "ylorbr", legend: false
+                                                                        type: "linear", scheme: "spectral", legend: false
                                                                       }
                                                                   }));
        const sizeCompPrev = [
