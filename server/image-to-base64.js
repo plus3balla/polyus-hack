@@ -1,5 +1,7 @@
 import files from 'fs';
 const makeFileIterator = (width) => {
+    // Function creating strings of type 0001, 0002 and so on
+    // Width of string decided by the parameter
     let num = 0;
     const stringNum = () => {
         const str = num.toString().split('');
@@ -17,6 +19,8 @@ const makeFileIterator = (width) => {
     };
 };
 export default async function convertNumberedImagesToBase64(args) {
+    // Function asynchronously reads files in order from ${left}(0*)1${right} and encodes them in base64
+    // If it doesn't encounter expected file than finishes
     const next = makeFileIterator(args.width);
     while (true) {
         let end = false;

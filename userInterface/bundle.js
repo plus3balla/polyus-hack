@@ -1,9 +1,7 @@
 import ClientWebSocket from "./client-websocket.js";
 
-let newData;
-
 const websocket = new ClientWebSocket((inst, data) => {
-                                                        newData = data; 
+                                                        newData = data;
                                                         console.log(data);
                                                       })
 

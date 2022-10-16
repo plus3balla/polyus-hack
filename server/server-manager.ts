@@ -23,6 +23,7 @@ let processingFrame:string | undefined, // Frame that being send to neural netwo
 let translationFinished = false, counter = 0;
 
 const graphResult: number[][] = []; // Compressed response from neural network for frontend statistics
+const maxValues: number[] = [];
 
 //Timer
 const waitFor = 1000; // Waiting time
@@ -109,6 +110,7 @@ server.on('connection', function(socket) {
             const classes = getClassesPercent(processedResults.rectangles);
 
             graphResult.push([...classes, max])
+            maxValues.push(max);
 
             await queueUp();
             if (!isTranlationLive()) {socket.close(1000, 'Translation finished'); return}
@@ -128,7 +130,7 @@ server.on('connection', function(socket) {
             if (!isTranlationLive()) {socket.close(1000, 'Translation finished'); return}
 
             if (processedResults !== undefined) socket.send(JSON.stringify(
-                Object.assign({}, processedResults, {counter, graphResult : graphResult[Math.floor(graphResult.length / 2)]})
+                Object.assign({}, processedResults, {counter, graphResult : graphResult[Math.floor(graphResult.length / 2)], maxValues})
                 ));
             else {socket.send(JSON.stringify({ type : JSONTypes.processedFrame, counter}))}
         }

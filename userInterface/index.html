@@ -7,7 +7,10 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
-    <script defer src="bundle.js" type="module"></script>
+    <script type='text/javascript' > 
+      var newData = false; 
+    </script>
+    <script src="bundle.js" type="module"></script>
   </head>
   <body>
 
@@ -48,27 +51,56 @@
 
         <div class="elem grey" id="max-size-plot">
           <p>Изменение макс. размера частиц (мм)</p>
+          <p style="font-size: 13px;"> за последние 30 минут</p>
         </div>
 
         <div class="elem grey" id="trend-plot">
           <p>Тренд изменения грансостава (%)</p>
+          <p style="font-size: 13px;"> за последние 30 минут</p>
         </div>
 
       </div>
 	  </div>
+    <script src="./js/dataProcessing.js"></script>
+    <script src="./js/setNewOversize.js"></script>
+    <script src="./js/setEmpty.js"></script>
+    <script src="./js/setOversizeAlert.js"></script>
 
     <script type="module">
       import * as Plot from "https://cdn.skypack.dev/@observablehq/plot@0.6";
+
+      localStorage.setItem('oversize', 100);
       
       //const data = newData;
+      
+      function draw() {
 
-      setEmpty(data);
-      setOversizeAlert(data);
+      const pic = newData['frame'];
+
+      document.getElementById('base64image').src = `data:image/jpeg;base64,${pic}`;
+
+      setEmpty(newData['rectangles']);
+      setOversizeAlert(newData['rectangles']);
+
+      function clear() {
+        document.getElementById('size-classes-plot').innerHTML = '';
+        document.getElementById('trend-plot').innerHTML = '';
+        document.getElementById('max-size-plot').innerHTML = ''
+        document.getElementById('rects').innerHTML = ''
+
+        document.getElementById('trend-plot').insertAdjacentHTML('beforeend', <p style="font-size: 13px;"> за последние 30 минут</p>);
+        document.getElementById('max-size-plot').insertAdjacentHTML('beforeend', <p style="font-size: 13px;"> за последние 30 минут</p>);
+        document.getElementById('size-classes-plot').insertAdjacentHTML('beforeend', <p style="font-size: 13px;"> за последние 30 минут</p>);
+      }
+
+      clear();
 
       // plots output
 
-      const classesData = getClassesPercent(data);
-      // const classesData = newData["graphResult"];
+      //const classesData = getClassesPercent(data);
+      const rectangles = newData['rectangles'];
+
+      const classesData = [...getClassesPercent(rectangles), getMaxValue(rectangles)];
       //console.log(getMaxValue(data));
 
       const sizeComp = [
@@ -100,31 +132,23 @@
                                                                       }
                                                                   }));
        const sizeCompPrev = [
-                   {n: 0, size: "0-40мм", count: 10.07},
-                   {n: 1, size: "40-70мм", count: 10.08},
-                   {n: 2, size: "70-80мм", count: 5.81},
-                   {n: 3, size: "80-100мм", count: 1.53},
-                   {n: 4, size: "100-150мм", count: 19.77},
-                   {n: 5, size: "150-250мм", count: 30.92},
-                   {n: 6, size: ">250мм", count: 21.82}
+                   {n: 0, size: "0-40мм", count: newData['graphResult'][0]},
+                   {n: 1, size: "40-70мм", count: newData['graphResult'][1]},
+                   {n: 2, size: "70-80мм", count: newData['graphResult'][2]},
+                   {n: 3, size: "80-100мм", count: newData['graphResult'][3]},
+                   {n: 4, size: "100-150мм", count: newData['graphResult'][4]},
+                   {n: 5, size: "150-250мм", count: newData['graphResult'][5]},
+                   {n: 6, size: ">250мм", count: newData['graphResult'][6]}
                  ];
-       const sizeCompNext = [
-                    {n: 0, size: "0-40мм", count: 19.07},
-                    {n: 1, size: "40-70мм", count: 15.08},
-                    {n: 2, size: "70-80мм", count: 11.81},
-                    {n: 3, size: "80-100мм", count: 1.53},
-                    {n: 4, size: "100-150мм", count: 10.77},
-                    {n: 5, size: "150-250мм", count: 25.92},
-                    {n: 6, size: ">250мм", count: 15.82}
-                  ];
+      const sizeCompNext = sizeComp;
       const sizeCompMid = [
-                   {n: 0, size: "0-40мм", count: 14.57},
-                   {n: 1, size: "40-70мм", count: 12.58},
-                   {n: 2, size: "70-80мм", count: 8.81},
-                   {n: 3, size: "80-100мм", count: 1.53},
-                   {n: 4, size: "100-150мм", count: 15.27},
-                   {n: 5, size: "150-250мм", count: 28.42},
-                   {n: 6, size: ">250мм", count: 18.82}
+                  {n: 0, size: "0-40мм", count: (newData['graphResult'][0] + sizeComp[0]) / 2},
+                   {n: 1, size: "40-70мм", count: (newData['graphResult'][1] + sizeComp[1]) / 2},
+                   {n: 2, size: "70-80мм", count: (newData['graphResult'][2] + sizeComp[2]) / 2},
+                   {n: 3, size: "80-100мм", count: (newData['graphResult'][3] + sizeComp[3]) / 2},
+                   {n: 4, size: "100-150мм", count: (newData['graphResult'][4] + sizeComp[4]) / 2},
+                   {n: 5, size: "150-250мм", count: (newData['graphResult'][5] + sizeComp[5]) / 2},
+                   {n: 6, size: ">250мм", count: (newData['graphResult'][6] + sizeComp[6]) / 2}
                  ];
         document.getElementById('trend-plot').append(Plot.plot({
                                                                         marks: [
@@ -142,6 +166,8 @@
                                                                         x: {domain: sizes, label: ""},
                                                                         y: {grid: true, label: ""}
                                                                     }));
+        const sizeMax = newData['maxValues'].map((e, ind) => {return {time : ind, size : e}})
+        /*
         const sizeMax = [
                      {time: "10:51", size: 253},
                      {time: "10:52", size: 261},
@@ -152,7 +178,7 @@
                      {time: "10:57", size: 222},
                      {time: "10:58", size: 241},
                      {time: "10:59", size: 236}
-                   ];
+                   ];*/
         document.getElementById('max-size-plot').append(Plot.plot({
                                                                         marks: [
                                                                                 Plot.line(sizeMax, {x: "time", y: "size"}),
@@ -170,11 +196,12 @@
                                                                           type: "linear", scheme: "ylorbr", legend: false
                                                                         }
                                                                     }));                                                             
-    drawRects(data);
+    drawRects(newData['rectangles']);
+      }
+      
+      setInterval(draw, 1000);
+
   </script>
-  <script src="./js/dataProcessing.js"></script>
-  <script src="./js/setNewOversize.js"></script>
-  <script src="./js/setEmpty.js"></script>
-  <script src="./js/setOversizeAlert.js"></script>
+  
   </body>
 </html>

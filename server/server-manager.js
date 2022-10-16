@@ -7,16 +7,21 @@ function delay(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 //Data
-const frameQueue = [];
-let processingFrame, processedResults;
+const frameQueue = []; // Images that needs processing
+let processingFrame, // Frame that being send to neural network for processing
+processedResults; // Results from neural network
 let translationFinished = false, counter = 0;
-const graphResult = [];
+const graphResult = []; // Compressed response from neural network for frontend statistics
+const maxValues = [];
 //Timer
-const waitFor = 1000;
-let timerPased;
+const waitFor = 1000; // Waiting time
+let timerPased; // Used for sending request in intervals
 //Function
 //managing frameQueue
 const queueUp = async () => {
+    // Functions adds set new processingFrame from frameQueue
+    // Making sure to wait for convertImages
+    // Sets translationFinished to True when conversion is over
     counter++;
     while (frameQueue.length === 0 && !translationFinished)
         await delay(100);
@@ -37,8 +42,10 @@ const server = new WebSocketServer({
     port: 8080,
 });
 server.on('connection', function (socket) {
-    let identity = null;
+    // Dealing with clients on connection
+    let identity = null; // client's indentity
     const identify = (json) => {
+        // Identifies connected socket 
         if (json.type !== JSONTypes.greet)
             throw `Wrong json type. Expected: ${JSONTypes.greet} - Got ${json.type}`;
         if (json.who !== ConnectionTypes.visitor && json.who !== ConnectionTypes.neural)
@@ -47,7 +54,9 @@ server.on('connection', function (socket) {
     };
     const isTranlationLive = () => !(frameQueue.length === 0 && translationFinished);
     const handleNeural = async (json) => {
+        // Handles message from Neural Client 
         const askToProcessFrame = async () => {
+            // Requst to process frame from Neural Client
             await timerPased;
             socket.send(JSON.stringify({
                 type: JSONTypes.processRequest,
@@ -69,6 +78,7 @@ server.on('connection', function (socket) {
             const max = getMaxValue(processedResults.rectangles);
             const classes = getClassesPercent(processedResults.rectangles);
             graphResult.push([...classes, max]);
+            maxValues.push(max);
             await queueUp();
             if (!isTranlationLive()) {
                 socket.close(1000, 'Translation finished');
@@ -80,6 +90,7 @@ server.on('connection', function (socket) {
             throw `Wrong json type. Expected: ${JSONTypes.greet} or ${JSONTypes.processedFrame}  - Got ${json.type}`;
     };
     const handleVisitor = (json) => {
+        // Handle messages from Visitor Client
         if (json.type === JSONTypes.greet)
             return;
         if (JSONTypes.webserviceRequest) {
@@ -88,7 +99,7 @@ server.on('connection', function (socket) {
                 return;
             }
             if (processedResults !== undefined)
-                socket.send(JSON.stringify(Object.assign({}, processedResults, { counter, graphResult: graphResult[Math.floor(graphResult.length / 2)] })));
+                socket.send(JSON.stringify(Object.assign({}, processedResults, { counter, graphResult: graphResult[Math.floor(graphResult.length / 2)], maxValues })));
             else {
                 socket.send(JSON.stringify({ type: JSONTypes.processedFrame, counter }));
             }
@@ -97,6 +108,7 @@ server.on('connection', function (socket) {
             throw `Wrong json type. Expected: ${JSONTypes.greet} or ${JSONTypes.webserviceRequest}  - Got ${json.type}`;
     };
     socket.on('message', function (msg) {
+        // Passes messages to handlers and identifies clients on first contact
         const json = JSON.parse(msg.toString());
         if (identity === null) {
             identity = identify(json);
