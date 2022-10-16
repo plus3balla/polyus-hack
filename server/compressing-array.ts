@@ -1,3 +1,5 @@
+// Functions provided by the front for comressing large rectangles data into 8 - index arrays
+
 export const getClassesPercent = (data: number[][]) => {
     const n_data = data.length;
     let classes = [0, 0, 0, 0, 0, 0, 0];

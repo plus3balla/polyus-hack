@@ -1,6 +1,9 @@
 import PacketManager from "./packet-manager.js";
 
 export default class ClientWebSocket {
+
+    // Wrapper class for packetManager to simplify frontend for current project
+
     packetManager;
 
     constructor(dataCallback) {

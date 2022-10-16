@@ -1,5 +1,9 @@
 import deepCopyMap from './deep-copy-map.js';
 export default class PacketManager {
+
+    // Wrapper class for websockets
+    // Reacts to messages diffirently according to json type and passed reactMessages(Map)
+
     constructor(args) {
         this.reactToMessages = (event) => {
             var _a;
