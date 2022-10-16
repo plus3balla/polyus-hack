@@ -1,6 +1,9 @@
 import files from 'fs';
 
 interface ConverterArguments {
+
+    // Interface for function's convertNumberedImagesToBase64 arguments
+
     left: string,
     right: string, 
     width : number,
@@ -9,6 +12,10 @@ interface ConverterArguments {
 }
 
 const makeFileIterator = (width: number) => {
+
+    // Function creating strings of type 0001, 0002 and so on
+    // Width of string decided by the parameter
+
     let num = 0;
 
     const stringNum = () : string => {
@@ -27,6 +34,10 @@ const makeFileIterator = (width: number) => {
 }
 
 export default async function convertNumberedImagesToBase64(args:ConverterArguments) : Promise<void> {
+
+    // Function asynchronously reads files in order from ${left}(0*)1${right} and encodes them in base64
+    // If it doesn't encounter expected file than finishes
+
     const next = makeFileIterator(args.width);
 
     while (true) {
