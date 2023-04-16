@@ -127,3 +127,15 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+
+# Roman's stuff
+/server/images
+/server/node_modules
+/server/video
+
+# Other
+/dataset
+video.mp4
+text.txt
+model
